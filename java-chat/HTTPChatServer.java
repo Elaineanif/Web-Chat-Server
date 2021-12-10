@@ -1,3 +1,12 @@
+/* Notes: 
+ * This code is modified from the original to work with 
+ * the CS 352 chat client:
+ *
+ * 1. added args to allow for a command line to the port 
+ * 2. Added 200 OK code to the sendResponse near line 77
+ * 3. Changed default file name in getFilePath method to ./ from www 
+ */ 
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,12 +20,16 @@ import java.util.List;
 public class Server {
 
     public static void main( String[] args ) throws Exception {
-        if(args.length != 1){
+
+	if (args.length != 1) 
+        {
             System.err.println("Usage: java Server <port number>");
             System.exit(1);
         }
-        int portnumber = Integer.parseInt(args[0]);
-        try (ServerSocket serverSocket = new ServerSocket(portnumber)) {
+        //create server socket given port number
+        int portNumber = Integer.parseInt(args[0]);
+	
+        try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
             while (true) {
                 try (Socket client = serverSocket.accept()) {
                     handleClient(client);
@@ -35,13 +48,17 @@ public class Server {
         }
 
         String request = requestBuilder.toString();
-        String[] requestsLines = request.split("\r\n");
+
+        System.out.printf("The request is: %s \n", request);
+
+	String[] requestsLines = request.split("\r\n");
         String[] requestLine = requestsLines[0].split(" ");
         String method = requestLine[0];
         String path = requestLine[1];
         String version = requestLine[2];
         String host = requestsLines[1].split(" ")[1];
 
+	// build the reponse here 
         List<String> headers = new ArrayList<>();
         for (int h = 2; h < requestsLines.length; h++) {
             String header = requestsLines[h];
@@ -68,7 +85,7 @@ public class Server {
 
     private static void sendResponse(Socket client, String status, String contentType, byte[] content) throws IOException {
         OutputStream clientOutput = client.getOutputStream();
-        clientOutput.write(("HTTP/1.1 \r\n" + status).getBytes());
+        clientOutput.write(("HTTP/1.1 200 OK\r\n" + status).getBytes());
         clientOutput.write(("ContentType: " + contentType + "\r\n").getBytes());
         clientOutput.write("\r\n".getBytes());
         clientOutput.write(content);
@@ -82,7 +99,7 @@ public class Server {
             path = "/index.html";
         }
 
-        return Paths.get("/tmp/www", path);
+        return Paths.get("./", path);
     }
 
     private static String guessContentType(Path filePath) throws IOException {
