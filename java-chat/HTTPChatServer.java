@@ -11,7 +11,12 @@ import java.util.List;
 public class Server {
 
     public static void main( String[] args ) throws Exception {
-        try (ServerSocket serverSocket = new ServerSocket(8080)) {
+        if(args.length != 1){
+            System.err.println("Usage: java Server <port number>");
+            System.exit(1);
+        }
+        int portnumber = Integer.parseInt(args[0]);
+        try (ServerSocket serverSocket = new ServerSocket(portnumber)) {
             while (true) {
                 try (Socket client = serverSocket.accept()) {
                     handleClient(client);
