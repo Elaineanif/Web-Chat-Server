@@ -85,7 +85,7 @@ public class Server {
 
     private static void sendResponse(Socket client, String status, String contentType, byte[] content) throws IOException {
         OutputStream clientOutput = client.getOutputStream();
-        clientOutput.write(("HTTP/1.1 200 OK\r\n" + status).getBytes());
+        clientOutput.write(("HTTP/1.1 200 OK" + status + "\r\n").getBytes());
         clientOutput.write(("ContentType: " + contentType + "\r\n").getBytes());
         clientOutput.write("\r\n".getBytes());
         clientOutput.write(content);
