@@ -57,6 +57,14 @@ public class Server {
         String path = requestLine[1];
         String version = requestLine[2];
         String host = requestsLines[1].split(" ")[1];
+	String username;
+	if(method.equals("POST")){
+		while(br.ready()){
+			char c=(char)br.read();
+			username=username+c;
+		}
+		
+	}
 
 	// build the reponse here 
         List<String> headers = new ArrayList<>();
@@ -104,6 +112,20 @@ public class Server {
 
     private static String guessContentType(Path filePath) throws IOException {
         return Files.probeContentType(filePath);
+    }
+    public boolean rightLogin(String username, String password){
+    	File f=new File("credentials.txt");
+	String readline;
+	BufferedReader read=new BufferedReader(new FileReader(f));
+	readline=read.readLine();
+	while(readline!=null){
+		if(readline.equals(username+","+password)){
+			return true;
+		}
+		readline=read.readLine();
+	}
+	return false;
+
     }
 
 }
