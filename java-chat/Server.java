@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 // Read the full article https://dev.to/mateuszjarzyna/build-your-own-http-server-in-java-in-less-than-one-hour-only-get-method-2k02
 public class Server {
@@ -72,11 +73,11 @@ public class Server {
         String[] mpassword = mixpassword.split("\\=");
         String password = mpassword[1];
         boolean rightlogin = rightLogin(username, password);
-        if (rightlogin == true){
-            
-        } else{
-            
+        if(rightlogin == false){
+            errorpage("wronglogin");
+            System.exit(0);
         }
+
 
 
         }
@@ -88,6 +89,7 @@ public class Server {
             String header = requestsLines[h];
             headers.add(header);
         }
+
 
         String accessLog = String.format("Client %s, method %s, path %s, version %s, host %s, headers %s",
                 client.toString(), method, path, version, host, headers.toString());
@@ -109,14 +111,23 @@ public class Server {
 
     private static void sendResponse(Socket client, String status, String contentType, byte[] content) throws IOException {
         OutputStream clientOutput = client.getOutputStream();
-        clientOutput.write(("HTTP/1.1 200 OK" + status + "\r\n").getBytes());
+        clientOutput.write(("HTTP/1.1" + status + "\r\n").getBytes());
         clientOutput.write(("ContentType: " + contentType + "\r\n").getBytes());
         clientOutput.write("\r\n".getBytes());
         clientOutput.write(content);
         clientOutput.write("\r\n\r\n".getBytes());
+        int min = 100000;
+        int max = 1000000;
+        int cookie = (int)Math.floor(Math.random()*(max-min+1)+min);
+        clientOutput.write(("Set-Cookie: " + cookie).getBytes());
         clientOutput.flush();
         client.close();
     }
+
+    //private static void setCookie(Socket client, String username)throws IOException{
+    //    OutputStream clientOutput = client.getOutputStream();
+    //    
+    //}
 
     private static Path getFilePath(String path) {
         if ("/".equals(path)) {
@@ -143,6 +154,15 @@ public class Server {
 	}
 	return false;
 
+    }
+
+    private static String errorpage(String error){
+        if(error.equals("wronglogin")){
+            System.out.println("The user and password are wrong.");
+        } else if (error.equals("wrongcookie")){
+            System.out.println("This is not a vaild cookie.");
+        }
+        return error;
     }
 
 //    public boolean haveCookie(){
