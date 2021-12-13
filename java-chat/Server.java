@@ -57,15 +57,20 @@ public class Server {
         String path = requestLine[1];
         String version = requestLine[2];
         String host = requestsLines[1].split(" ")[1];
-        String usernamemix;
+        String usernamemix = null;
+
         if(method.equals("POST")){
             while(br.ready()){
                 char c = (char)br.read();
                 usernamemix = usernamemix + c;
             }
-        String[] nameline = username.split("\\s+");
-        String username = nameline[0];
-        String password = nameline[1];
+        String[] nameline = usernamemix.split("\\&");
+        String mixusername = nameline[0];
+        String[] musername = mixusername.split("\\=");
+        String username = musername[1];
+        String mixpassword = nameline[1];
+        String[] mpassword = mixpassword.split("\\=");
+        String password = mpassword[1];
         boolean rightlogin = rightLogin(username, password);
         if (rightlogin == true){
             
@@ -124,7 +129,8 @@ public class Server {
     private static String guessContentType(Path filePath) throws IOException {
         return Files.probeContentType(filePath);
     }
-    public boolean rightLogin(String username, String password){
+
+    private static boolean rightLogin(String username, String password) throws IOException{
     	File f=new File("credentials.txt");
 	String readline;
 	BufferedReader read=new BufferedReader(new FileReader(f));
@@ -138,5 +144,9 @@ public class Server {
 	return false;
 
     }
+
+//    public boolean haveCookie(){
+//        if(haveCookie)
+//    }
 
 }
