@@ -57,14 +57,25 @@ public class Server {
         String path = requestLine[1];
         String version = requestLine[2];
         String host = requestsLines[1].split(" ")[1];
-	String username;
-	if(method.equals("POST")){
-		while(br.ready()){
-			char c=(char)br.read();
-			username=username+c;
-		}
-		
-	}
+        String usernamemix;
+        if(method.equals("POST")){
+            while(br.ready()){
+                char c = (char)br.read();
+                usernamemix = usernamemix + c;
+            }
+        String[] nameline = username.split("\\s+");
+        String username = nameline[0];
+        String password = nameline[1];
+        boolean rightlogin = rightLogin(username, password);
+        if (rightlogin == true){
+            
+        } else{
+            
+        }
+
+
+        }
+
 
 	// build the reponse here 
         List<String> headers = new ArrayList<>();
